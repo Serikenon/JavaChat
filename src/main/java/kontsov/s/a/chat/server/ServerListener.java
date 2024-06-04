@@ -5,16 +5,18 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ServerListener {
+    private ExecutorService executorService = Executors.newCachedThreadPool();
     public void start(int port) throws IOException {
         ServerSocket serverSocket = new ServerSocket(port);
         ChatLog log = new ChatLog();
         while (true) {
             Socket incomingConnection = serverSocket.accept();
             ClientHandler client = new ClientHandler(incomingConnection, new ChatLog());
-            Thread clientThread = new Thread(client);
-            clientThread.start();
+            executorService.execute(client);
         }
     }
 
